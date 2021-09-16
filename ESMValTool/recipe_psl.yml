@@ -1,0 +1,90 @@
+# ESMValTool
+# recipe_python.yml
+---
+documentation:
+  description: |
+    Example recipe that plots a map and timeseries of temperature.
+
+  authors:
+    - andela_bouwe
+    - righi_mattia
+
+  maintainer:
+    - schlund_manuel
+
+  references:
+    - acknow_project
+
+  projects:
+    - esmval
+    - c3s-magic
+
+datasets:
+  - {dataset: EC-Earth3-CC, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
+#  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
+
+preprocessors:
+
+  select_january:
+    extract_month:
+      month: 1
+
+  annual_mean_annecy:
+    extract_point:
+      latitude: 45.902344
+      longitude: 6.134173
+      scheme: linear
+    annual_statistics:
+      operator: mean
+
+  annual_mean_global:
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+
+diagnostics:
+
+  map:
+    description: Global map of sea level pressure in January 2000.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      psl:
+        mip: Amon
+        preprocessor: select_january
+        start_year: 2000
+        end_year: 2000
+    scripts:
+      script1:
+        script: examples/diagnostic.py
+        quickplot:
+          plot_type: pcolormesh
+          cmap: Reds
+
+  timeseries:
+    description: Annual mean sea level pressure in Annecy and global mean 2000.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      psl_annecy:
+        short_name: psl
+        mip: Amon
+        preprocessor: annual_mean_annecy
+        start_year: 1850
+        end_year: 2014
+      psl_global:
+        short_name: psl
+        mip: Amon
+        preprocessor: annual_mean_global
+        start_year: 1850
+        end_year: 2014
+    scripts:
+      script1:
+        script: examples/diagnostic.py
+        quickplot:
+          plot_type: plot
