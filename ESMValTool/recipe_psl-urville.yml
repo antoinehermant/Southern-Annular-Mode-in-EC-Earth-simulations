@@ -1,0 +1,78 @@
+# ESMValTool
+# recipe_python.yml
+---
+documentation:
+  description: |
+    Example recipe that plots a map and timeseries of temperature.
+
+  authors:
+    - andela_bouwe
+    - righi_mattia
+
+  maintainer:
+    - schlund_manuel
+
+  references:
+    - acknow_project
+
+  projects:
+    - esmval
+    - c3s-magic
+
+datasets:
+  - {dataset: EC-Earth3-CC, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
+  - {dataset: EC-Earth3-Veg-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
+
+preprocessors:
+
+  select_january:
+    extract_month:
+      month: 1
+
+  annual_mean_dumont-urville:
+    extract_point:
+      latitude: -66.662778
+      longitude: 140.001944
+      scheme: linear
+    annual_statistics:
+      operator: mean
+
+diagnostics:
+
+  map:
+    description: Global map of sea level pressure in January 2014.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      psl:
+        mip: Amon
+        preprocessor: select_january
+        start_year: 2014
+        end_year: 2014
+    scripts:
+      script1:
+        script: examples/diagnostic.py
+        quickplot:
+          plot_type: pcolormesh
+          cmap: Reds
+
+  timeseries:
+    description: Annual mean sea level pressure at Dumont D'Urville Station-Antarctica.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      psl_dumont-urville:
+        short_name: psl
+        mip: Amon
+        preprocessor: annual_mean_dumont-urville
+        start_year: 1850
+        end_year: 2014
+    scripts:
+      script1:
+        script: examples/diagnostic.py
+        quickplot:
+          plot_type: plot
