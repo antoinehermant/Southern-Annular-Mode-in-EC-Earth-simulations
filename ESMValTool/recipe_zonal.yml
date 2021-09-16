@@ -1,0 +1,79 @@
+# ESMValTool
+# recipe_python.yml
+---
+documentation:
+  description: |
+    Example recipe that plots a map and timeseries of temperature.
+
+  authors:
+    - andela_bouwe
+    - righi_mattia
+
+  maintainer:
+    - schlund_manuel
+
+  references:
+    - acknow_project
+
+  projects:
+    - esmval
+    - c3s-magic
+
+datasets:
+  - {dataset: EC-Earth3-CC, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
+  - {dataset: EC-Earth3-Veg-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
+
+preprocessors:
+
+  mid_lat:
+    extract_region:
+      start_longitude: -180
+      end_longitude: 180
+      start_latitude: -41
+      end_latitude: -39
+   # annual_statistics:
+    #  operator: mean
+    area_statistics:
+      operator: mean
+  high_lat:
+    extract_region:
+      start_longitude: -180
+      end_longitude: 180
+      start_latitude: -66
+      end_latitude: -64
+   # annual_statistics:
+    #  operator: mean
+    area_statistics:
+      operator: mean
+   # extract_transect:
+    #  latitude: -45
+     # longitude: [-90, 90]
+   # statistics:
+     # operator: mean
+
+diagnostics:
+
+  timeseries:
+    description: SAM_index
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      sam_index_mid_lat:
+        short_name: psl
+        mip: Amon
+        preprocessor: mid_lat
+        start_year: 1950
+        end_year: 2005
+      sam_index_high_lat:
+        short_name: psl
+        mip: Amon
+        preprocessor: high_lat
+        start_year: 1950
+        end_year: 2005
+    scripts:
+      script1:
+        script: /mnt/d/DMI/sam/esmvaltool/diagnostic.py
+        quickplot:
+          plot_type: plot
